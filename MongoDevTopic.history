@@ -1,9 +1,6 @@
-// Clean DB
+// Clean collection and create db if not there
 use kpi_test
-db.dropDatabase()
-
-//Create DB
-use kpi_test
+db.kpi_test.drop()
 
 //Insert Element
 db.kpi_test.insert({element:'first'})
@@ -34,7 +31,7 @@ db.kpi_test.find( { "element": "seventh"} )
 db.kpi_test.find( { "element": {$in:["seventh", "tenth"]}} )
 
 // Insert multiple documents
-db.kpi_test.insert([{element:"thirteenth"},{element:"fourteenth"},{element:"fifteenth"}, {element:"sixteenth"}, {element:"seventeenth"}, {element:"eighteenth"}, {element:"nineteenth"}, {element:"twentieth"}, {element:"twenty first"])
+db.kpi_test.insert([{element:"thirteenth"},{element:"fourteenth"},{element:"fifteenth"}, {element:"sixteenth"}, {element:"seventeenth"}, {element:"eighteenth"}, {element:"nineteenth"}, {element:"twentieth"}, {element:"twenty first"}])
 
 // But we realise there was a mistake
 db.kpi_test.update({element:"nineth"},{$set:{element:"ninth"}})
@@ -70,6 +67,8 @@ db.kpi_test.find().skip(3)
 
 // More complex queries that can be performed
 // We add more data
+// -- aaabbb
+// -- abgabg
 db.kpi_test_complex.insert([{complex:"a",field:"alpha"},{complex:"a",field:"beta"}, {complex:"a",field:"gamma"}, {complex:"b",field:"alpha"},{complex:"b",field:"beta"}, {complex:"b",field:"gamma"}])
 
 // Let's check what's in the new collection

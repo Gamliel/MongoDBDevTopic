@@ -122,3 +122,9 @@ db.large_collection.find({key:499999}).explain()
 // The Pipeline
 db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}}])
 
+// Find max and min for each class
+db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$sort:{key:1,value:1}}, {$group:{_id:"$key", total:{$sum:"$value"},max:{$last:"$value"},min:{$first:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total", max:"$max",min:"$min"}},{$sort:{total:1}}])
+
+
+db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}}])
+

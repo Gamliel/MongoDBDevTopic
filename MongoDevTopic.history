@@ -96,14 +96,10 @@ db.kpi_test_complex.find({complex:"a"},{field:1})
 db.kpi_test_complex.find({complex:"a"},{field:1,_id:0})
 
 // // Indices
-
+va
 // After performing:
 
-db.eval(function () {
-     for (var i = 0; i < 500000; i++){
-        db.large_collection.insert({key:i, value:Math.random()});
-     }
-   })
+db.eval(function () {for (var i = 0; i < 500000; i++){db.large_collection.insert({key:i%20, value:Math.random()});}})
 
 // Find is a bit slow
 db.large_collection.find({key:499999})
@@ -122,4 +118,7 @@ db.large_collection.dropIndex({key:1})
 
 // And see what explains tells us again
 db.large_collection.find({key:499999}).explain()
+
+// The Pipeline
+db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}}])
 

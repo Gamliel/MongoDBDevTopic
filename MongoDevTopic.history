@@ -125,6 +125,9 @@ db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", tota
 // Find max and min for each class
 db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$sort:{key:1,value:1}}, {$group:{_id:"$key", total:{$sum:"$value"},max:{$last:"$value"},min:{$first:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total", max:"$max",min:"$min"}},{$sort:{total:1}}])
 
+// Minimum class
+db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}},{$project:{_id:0,class:"$class"}}]).toArray()[0]
 
-db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}}])
+// Maximum class
+db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:-1}},{$project:{_id:0,class:"$class"}}]).toArray()[0]
 

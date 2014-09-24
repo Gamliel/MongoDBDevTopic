@@ -1,0 +1,125 @@
+// Clean DB
+use kpi_test
+db.dropDatabase()
+
+//Create DB
+use kpi_test
+
+//Insert Element
+db.kpi_test.insert({element:'first'})
+
+//Retrieve 20 documents
+db.kpi_test.find()
+
+// Insert elements
+db.kpi_test.insert({element:'second'})
+db.kpi_test.insert({element:'third'})
+db.kpi_test.insert({element:'fourth'})
+db.kpi_test.insert({element:'fifth'})
+db.kpi_test.insert({element:'sixth'})
+db.kpi_test.insert({element:'seventh'})
+db.kpi_test.insert({element:'eighth'})
+db.kpi_test.insert({element:'nineth'})
+db.kpi_test.insert({element:'tenth'})
+db.kpi_test.insert({element:'eleventh'})
+db.kpi_test.insert({element:'twelfth'})
+
+// Retrieve a maximum of 2 documents
+db.kpi_test.find().limit(2)
+
+// Retrieve a specific document
+db.kpi_test.find( { "element": "seventh"} )
+
+// Retrieve documents according to a specific condition
+db.kpi_test.find( { "element": {$in:["seventh", "tenth"]}} )
+
+// Insert multiple documents
+db.kpi_test.insert([{element:"thirteenth"},{element:"fourteenth"},{element:"fifteenth"}, {element:"sixteenth"}, {element:"seventeenth"}, {element:"eighteenth"}, {element:"nineteenth"}, {element:"twentieth"}, {element:"twenty first"])
+
+// But we realise there was a mistake
+db.kpi_test.update({element:"nineth"},{$set:{element:"ninth"}})
+
+// We can also add a field to an existing element
+db.kpi_test.update({element:"tenth"},{$set:{cardinal:10}})
+
+// We can also replace an entire document altogether
+db.kpi_test.update({element:"fifth"},{cardinal:5})
+
+// We can also remove a document matching a condition
+db.kpi_test.remove({element:"third"})
+
+// How do I remove all of them?
+// In Another Window
+// >mongodump -o ./
+
+// Or we can remove them all
+db.kpi_test.remove({})
+
+// Test the removal
+db.kpi_test.find()
+
+// And restore the previous data
+// In another window
+// >mongorestore ./
+
+// Test the restore
+db.kpi_test.find()
+
+// you can skip the first n-elements
+db.kpi_test.find().skip(3)
+
+// More complex queries that can be performed
+// We add more data
+db.kpi_test_complex.insert([{complex:"a",field:"alpha"},{complex:"a",field:"beta"}, {complex:"a",field:"gamma"}, {complex:"b",field:"alpha"},{complex:"b",field:"beta"}, {complex:"b",field:"gamma"}])
+
+// Let's check what's in the new collection
+db.kpi_test_complex.find()
+
+// Let's see how to query an and
+db.kpi_test_complex.find({$and:[{complex:"a"},{field:"beta"}]})
+
+// But also with a unary operator
+db.kpi_test_complex.find({$and:[{complex:"a"},{field:{$eq:"gamma"}}]})
+
+// Let's see how to query an or
+db.kpi_test_complex.find({$or:[{complex:"a"},{field:"beta"}]})
+
+// Let's see how to query a not
+db.kpi_test_complex.find({field:{$not:{$eq:"beta"}}})
+
+// Let's combine them 'a' AND (NOT alpha AND NOT gamma)
+db.kpi_test_complex.find({$and:[{complex:"a"},{$and:[{field:{$not:{$eq:"alpha"}}},{field:{$not:{$eq:"gamma"}}}]}]})
+
+// We can use projection to show a subset of the fields in the result
+db.kpi_test_complex.find({complex:"a"},{field:1})
+
+// Please note _id is always on and must be deactivated explicitly
+db.kpi_test_complex.find({complex:"a"},{field:1,_id:0})
+
+// // Indices
+
+// After performing:
+
+db.eval(function () {
+     for (var i = 0; i < 500000; i++){
+        db.large_collection.insert({key:i, value:Math.random()});
+     }
+   })
+
+// Find is a bit slow
+db.large_collection.find({key:499999})
+
+// I create the index
+db.large_collection.createIndex({key:1})
+
+// And Find is faster
+db.large_collection.find({key:499999})
+
+// I can see whether the query I wrote is actually hitting the index
+db.large_collection.find({key:499999}).explain()
+
+// I can drop the index
+db.large_collection.dropIndex({key:1})
+
+// And see what explains tells us again
+db.large_collection.find({key:499999}).explain()

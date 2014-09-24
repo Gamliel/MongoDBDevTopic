@@ -4,5 +4,5 @@ if __name__ == "__main__":
 		for line in f:
 			if (not (line.startswith('//')) and not(line.startswith('\n'))):
 				lineWithoutEndLine = line[0:(len(line) -1)];
-				print lineWithoutEndLine + '// #', counter;
+				print lineWithoutEndLine + '; // #'  + str(counter) + '/';
 				counter += 1;

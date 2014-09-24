@@ -123,3 +123,4 @@ db.large_collection.dropIndex({key:1})
 
 // And see what explains tells us again
 db.large_collection.find({key:499999}).explain()
+

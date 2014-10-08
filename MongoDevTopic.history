@@ -1,6 +1,7 @@
 // Clean collection and create db if not there
 use kpi_test
 db.kpi_test.drop()
+db.kpi_test_complex.drop()
 
 //Insert Element
 db.kpi_test.insert({element:'first'})
@@ -45,22 +46,22 @@ db.kpi_test.update({element:"fifth"},{cardinal:5})
 // We can also remove a document matching a condition
 db.kpi_test.remove({element:"third"})
 
+// Let's just have a look at what is there
+db.kpi_test.find()
+
 // How do I remove all of them?
 // In Another Window
 // >mongodump -o ./
 
-// Or we can remove them all
+// Let's remove them
 db.kpi_test.remove({})
 
-// Test the removal
+// Check that the removal succeeded
 db.kpi_test.find()
 
 // And restore the previous data
 // In another window
 // >mongorestore ./
-
-// Test the restore
-db.kpi_test.find()
 
 // you can skip the first n-elements
 db.kpi_test.find().skip(3)
@@ -96,28 +97,29 @@ db.kpi_test_complex.find({complex:"a"},{field:1})
 db.kpi_test_complex.find({complex:"a"},{field:1,_id:0})
 
 // // Indices
-va
+
 // After performing:
 
 db.eval(function () {for (var i = 0; i < 500000; i++){db.large_collection.insert({key:i%20, value:Math.random()});}})
 
 // Find is a bit slow
-db.large_collection.find({key:499999})
+db.large_collection.find({$and:[{value:{$lt:0.677643443257}},{value:{$gt:0.677640000047}}]});
 
-// I create the index
+// I create the indexes
 db.large_collection.createIndex({key:1})
+db.large_collection.createIndex({value:1})
 
 // And Find is faster
-db.large_collection.find({key:499999})
+db.large_collection.find({$and:[{value:{$lt:0.677643443257}},{value:{$gt:0.677640000047}}]});
 
 // I can see whether the query I wrote is actually hitting the index
-db.large_collection.find({key:499999}).explain()
+db.large_collection.find({$and:[{value:{$lt:0.677643443257}},{value:{$gt:0.677640000047}}]}).explain()
 
 // I can drop the index
-db.large_collection.dropIndex({key:1})
+db.large_collection.dropIndex({value:1})
 
 // And see what explains tells us again
-db.large_collection.find({key:499999}).explain()
+db.large_collection.find({$and:[{value:{$lt:0.677643443257}},{value:{$gt:0.677640000047}}]}).explain()
 
 // The Pipeline
 db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}}])
@@ -125,9 +127,9 @@ db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", tota
 // Find max and min for each class
 db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$sort:{key:1,value:1}}, {$group:{_id:"$key", total:{$sum:"$value"},max:{$last:"$value"},min:{$first:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total", max:"$max",min:"$min"}},{$sort:{total:1}}])
 
-// Minimum class
+// Minimum Total class
 db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:1}},{$project:{_id:0,class:"$class"}}]).toArray()[0]
 
-// Maximum class
+// Maximum Total class
 db.large_collection.aggregate([{$match:{key:{$lt:7}}}, {$group:{_id:"$key", total:{$sum:"$value"}}},{$project:{_id:0,class:"$_id", total:"$total"}},{$sort:{total:-1}},{$project:{_id:0,class:"$class"}}]).toArray()[0]
 
